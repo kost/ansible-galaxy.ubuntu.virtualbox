@@ -1,0 +1,3 @@
+---
+virtualbox_package_name: virtualbox-4.3
+ubuntu_apt_version: trusty
