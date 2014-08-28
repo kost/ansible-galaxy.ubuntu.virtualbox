@@ -7,6 +7,13 @@
 - name: add virtualbox repository
   sudo: yes
   action: apt_repository repo="deb http://download.virtualbox.org/virtualbox/debian {{ansible_lsb.codename}} contrib" state=present update_cache=yes 
+  when: "ansible_distribution_version not in ['14.04']"  
+  tags: virtualbox
+
+- name: add virtualbox repository
+  sudo: yes
+  action: apt_repository repo="deb http://download.virtualbox.org/virtualbox/debian trusty contrib" state=present update_cache=yes 
+  when: "ansible_distribution_version in ['14.04']"  
   tags: virtualbox
 
 - name: install virtualbox
