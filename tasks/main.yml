@@ -23,3 +23,11 @@
       - "{{virtualbox_package_name}}"
   tags: virtualbox
 
+- name: install additional virtualbox dkms package
+  sudo: yes
+  action: apt pkg="{{item}}" state=present update_cache=yes
+  with_items:
+      - "{{virtualbox_dkms_package_name}}"
+  when: virtualbox_dkms_enable
+  tags: virtualbox
+
