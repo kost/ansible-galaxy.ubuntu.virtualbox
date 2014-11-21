@@ -3,5 +3,3 @@
   sudo: true
   roles:
     - { role: ./ }
-
-#- include: ./integration-tests.yml
