@@ -1,5 +1,11 @@
 ---
 virtualbox_version: 4.3
-virtualbox_package_name: virtualbox-{{ virtualbox_version }}
+virtualbox_package_name: "virtualbox-{{ virtualbox_version }}"
 virtualbox_dkms_enable: no
 virtualbox_dkms_package_name: virtualbox-dkms
+virtualbox_extension_enable: no
+virtualbox_extension_version: "4.3.12"
+virtualbox_extension_buildnumber: "93733"
+virtualbox_extension_package_name: "Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_extension_version }}-{{ virtualbox_extension_buildnumber }}.vbox-extpack"
+virtualbox_extension_package_url: "http://download.virtualbox.org/virtualbox/{{ virtualbox_extension_version }}/{{ virtualbox_extension_package_name }}"
+virtualbox_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"

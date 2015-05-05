@@ -1,19 +1,19 @@
 ---
 - name: add virtualbox apt key
   sudo: yes
-  action: apt_key url=http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc state=present 
+  action: apt_key url=http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc state=present
   tags: virtualbox
 
 - name: add virtualbox repository
   sudo: yes
-  action: apt_repository repo="deb http://download.virtualbox.org/virtualbox/debian {{ansible_lsb.codename}} contrib" state=present update_cache=yes 
-  when: "ansible_distribution_version not in ['14.04']"  
+  action: apt_repository repo="deb http://download.virtualbox.org/virtualbox/debian {{ansible_lsb.codename}} contrib" state=present update_cache=yes
+  when: "ansible_distribution_version not in ['14.04']"
   tags: virtualbox
 
 - name: add virtualbox repository
   sudo: yes
-  action: apt_repository repo="deb http://download.virtualbox.org/virtualbox/debian trusty contrib" state=present update_cache=yes 
-  when: "ansible_distribution_version in ['14.04']"  
+  action: apt_repository repo="deb http://download.virtualbox.org/virtualbox/debian trusty contrib" state=present update_cache=yes
+  when: "ansible_distribution_version in ['14.04']"
   tags: virtualbox
 
 - name: install virtualbox
@@ -31,3 +31,26 @@
   when: virtualbox_dkms_enable
   tags: virtualbox
 
+- name: create temporary directory
+  sudo: yes
+  shell: mktemp -d
+  register: tempdir
+  when: virtualbox_extension_enable
+  tags: virtualbox_extension
+
+- name: download extension
+  get_url: url={{ virtualbox_extension_package_url }} dest={{ virtualbox_dir_tmp }}/{{ virtualbox_extension_package_name }} force=yes
+  when: virtualbox_extension_enable
+  tags: virtualbox_extension
+
+- name: install extension
+  sudo: yes
+  ignore_errors: true
+  command: VBoxManage extpack install {{ virtualbox_dir_tmp }}/{{ virtualbox_extension_package_name }}
+  when: virtualbox_extension_enable
+  tags: virtualbox_extension
+
+- name: cleanup temporary directory
+  file: name={{ tempdir.stdout }} state=absent
+  when: virtualbox_extension_enable
+  tags: virtualbox_extension
