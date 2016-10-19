@@ -50,6 +50,12 @@
   when: virtualbox_extension_enable
   tags: virtualbox_extension
 
+- name: Remove duplicate entry.
+  file: name=/etc/apt/sources.list.d/{{ item }} state=absent
+  become: yes
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' )
+  with_items: virtualbox_repo_files
+
 - name: cleanup temporary directory
   file: name={{ tempdir.stdout }} state=absent
   when: virtualbox_extension_enable
