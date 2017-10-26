@@ -18,7 +18,7 @@ install:
   #- "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
 script:
   - sudo ansible --version
-  - export ANSIBLE_ROLES_PATH="../"
+#  - export ANSIBLE_ROLES_PATH="../"
 #  - echo localhost > inventory
-  - ansible-playbook -i hosts --syntax-check virtualbox.yml
-  - ansible-playbook -i hosts --connection=local --sudo -vvvv virtualbox.yml
+  - sudo ansible-playbook -i hosts --syntax-check virtualbox.yml
+  - sudo ansible-playbook -i hosts --connection=local --sudo -vvvv virtualbox.yml
