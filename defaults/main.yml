@@ -1,7 +1,6 @@
 ---
-#virtualbox_version: 5.0
-virtualbox_version: 4.3
-virtualbox_package_name: "virtualbox-{{ virtualbox_version }}"
+virtualbox_version: "-4.3"
+virtualbox_package_name: "virtualbox{{ virtualbox_version }}"
 virtualbox_dkms_enable: no
 virtualbox_dkms_package_name: virtualbox-dkms
 virtualbox_extension_enable: no
