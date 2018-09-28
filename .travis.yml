@@ -8,6 +8,7 @@ cache:
   directories:
     - $HOME/.cache/pip
 env:
+  - ANSIBLE_VERSION=latest
   - ANSIBLE_VERSION=2.4.1.0
 
 sudo: required
