@@ -35,7 +35,7 @@ script:
   - ansible --version
 
   # Check the role/playbook's syntax.
-  - ansible-playbook --syntax-check -i ./hosts -vvvv ./virtualbox.yml --connection=local -e
+  - ansible-playbook --syntax-check -i ./hosts -vvvv ./virtualbox.yml --connection=local
 
   # Molecule test
   # - molecule test
