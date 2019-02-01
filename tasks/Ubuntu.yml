@@ -1,36 +1,51 @@
 
 - name: add virtualbox apt key
-  become: true
-  action: apt_key url=http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc state=present
+#  action: apt_key url=http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc state=present
+  apt_key: url={{ virtualbox_key }} state={{ util_pkg_state|default('present') }}
   tags: virtualbox
+  become: true
+
+#wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
+- name: add virtualbox apt key
+  apt_key: url=https://www.virtualbox.org/download/oracle_vbox_2016.asc state={{ util_pkg_state|default('present') }}
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04',  '14.04', '16.04', '17.04'])
+  tags: virtualbox
+  become: true
 
 - name: add virtualbox repository before 17.04 but not 14.04
-  become: true
-  action: apt_repository repo="deb http://download.virtualbox.org/virtualbox/debian {{ansible_lsb.codename}} contrib" state=present update_cache=yes
-  when: "ansible_distribution_version in ['12.04', '13.04', '16.04']"
+  apt_repository: repo="deb {{ virtualbox_repo_url_base }} {{ansible_lsb.codename}} contrib" state=present
+#  action: apt_repository repo="deb {{ virtualbox_repo_url_base }} {{ansible_lsb.codename}} contrib" state=present
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['12.04', '13.04', '16.04'])
   tags: virtualbox
+  become: true
 
 - name: add virtualbox repository
-  become: true
-  action: apt_repository repo="deb http://download.virtualbox.org/virtualbox/debian trusty contrib" state=present update_cache=yes
-  when: "ansible_distribution_version in ['14.04']"
+  apt_repository: repo="deb {{ virtualbox_repo_url_base }} trusty contrib" state=present
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['14.04'])
   tags: virtualbox
+  become: true
 
-- name: add virtualbox repository since 17.04
-  action: apt_repository repo="deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian {{ansible_lsb.codename}} contrib" state=present update_cache=yes
-  when: "ansible_distribution_version not in ['14.04']"
+- name: add virtualbox repository 17.04
+  apt_repository: repo="deb [arch=amd64] {{ virtualbox_repo_url_base }} {{ansible_lsb.codename}} contrib" state=present
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['17.04'])
+  tags: virtualbox
+  become: true
+
+- name: add virtualbox repository since 18.04
+  apt_repository: repo="deb [arch=amd64] {{ virtualbox_repo_url_base }} {{ansible_lsb.codename}} contrib" state=present
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version not in ['12.04', '13.04',  '14.04', '16.04', '17.04'])
   tags: virtualbox
   become: true
 
 - name: install virtualbox
-  action: apt pkg="{{item}}" state=present update_cache=yes
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=true"
   with_items:
-      - "{{virtualbox_package_name}}"
+      - "{{ virtualbox_package_name }}"
   tags: virtualbox
   become: true
 
 - name: install additional virtualbox dkms package
-  action: apt pkg="{{item}}" state=present update_cache=yes
+  action: "{{ ansible_pkg_mgr }} name={{ item }} state=present"
   with_items:
       - "{{virtualbox_dkms_package_name}}"
   when: virtualbox_dkms_enable

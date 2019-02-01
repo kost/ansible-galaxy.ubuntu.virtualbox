@@ -3,8 +3,8 @@
   yum_repository:
     name: virtualbox
     description: EPEL YUM repo
-    baseurl: http://download.virtualbox.org/virtualbox/rpm/el/$releasever/$basearch
-    gpgkey: https://www.virtualbox.org/download/oracle_vbox.asc
+    baseurl: "{{ virtualbox_url }}/rpm/el/$releasever/$basearch"
+    gpgkey: "{{ virtualbox_url }}"
     gpgcheck: yes
     enabled: no
 
