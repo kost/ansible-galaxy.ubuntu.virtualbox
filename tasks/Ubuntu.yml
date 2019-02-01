@@ -1,0 +1,44 @@
+
+- name: add virtualbox apt key
+  become: true
+  action: apt_key url=http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc state=present
+  tags: virtualbox
+
+- name: add virtualbox repository before 17.04 but not 14.04
+  become: true
+  action: apt_repository repo="deb http://download.virtualbox.org/virtualbox/debian {{ansible_lsb.codename}} contrib" state=present update_cache=yes
+  when: "ansible_distribution_version in ['12.04', '13.04', '16.04']"
+  tags: virtualbox
+
+- name: add virtualbox repository
+  become: true
+  action: apt_repository repo="deb http://download.virtualbox.org/virtualbox/debian trusty contrib" state=present update_cache=yes
+  when: "ansible_distribution_version in ['14.04']"
+  tags: virtualbox
+
+- name: add virtualbox repository since 17.04
+  action: apt_repository repo="deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian {{ansible_lsb.codename}} contrib" state=present update_cache=yes
+  when: "ansible_distribution_version not in ['14.04']"
+  tags: virtualbox
+  become: true
+
+- name: install virtualbox
+  action: apt pkg="{{item}}" state=present update_cache=yes
+  with_items:
+      - "{{virtualbox_package_name}}"
+  tags: virtualbox
+  become: true
+
+- name: install additional virtualbox dkms package
+  action: apt pkg="{{item}}" state=present update_cache=yes
+  with_items:
+      - "{{virtualbox_dkms_package_name}}"
+  when: virtualbox_dkms_enable
+  tags: virtualbox
+  become: true
+
+- name: Remove duplicate entry.
+  file: name=/etc/apt/sources.list.d/{{ item }} state=absent
+  when: ( ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' )
+  with_items: "{{virtualbox_repo_files}}"
+  become: true

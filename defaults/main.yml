@@ -1,11 +1,11 @@
 ---
-virtualbox_version: "-4.3"
-virtualbox_package_name: "virtualbox{{ virtualbox_version }}"
+virtualbox_version: "5.2.26"
+virtualbox_package_name: "virtualbox-{{ virtualbox_version }}"
 virtualbox_dkms_enable: false
 virtualbox_dkms_package_name: virtualbox-dkms
 virtualbox_extension_enable: false
-virtualbox_extension_version: "{{ virtualbox_version }}.28"
-virtualbox_extension_buildnumber: "100309"
+virtualbox_extension_version: "{{ virtualbox_version }}"
+virtualbox_extension_buildnumber: "128414"
 virtualbox_extension_package_name: "Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_extension_version }}-{{ virtualbox_extension_buildnumber }}.vbox-extpack"
 virtualbox_extension_package_url: "http://download.virtualbox.org/virtualbox/{{ virtualbox_extension_version }}/{{ virtualbox_extension_package_name }}"
 # virtualbox_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
@@ -13,3 +13,6 @@ virtualbox_dir_tmp: "{{ tempdir.stdout }}"
 
 virtualbox_repo_files:
   - "download_virtualbox_org_virtualbox_debian.list"
+
+virtualbox_users:
+  - "jenkins"
