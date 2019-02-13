@@ -1,6 +1,5 @@
 
 - name: add virtualbox apt key
-#  action: apt_key url=http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc state=present
   apt_key: url={{ virtualbox_key }} state={{ util_pkg_state|default('present') }}
   tags: virtualbox
   become: true
@@ -14,7 +13,6 @@
 
 - name: add virtualbox repository before 17.04 but not 14.04
   apt_repository: repo="deb {{ virtualbox_repo_url_base }} {{ansible_lsb.codename}} contrib" state=present
-#  action: apt_repository repo="deb {{ virtualbox_repo_url_base }} {{ansible_lsb.codename}} contrib" state=present
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu') and (ansible_distribution_version in ['12.04', '13.04', '16.04'])
   tags: virtualbox
   become: true
