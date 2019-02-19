@@ -1,7 +1,10 @@
 - name: vagrant | Create temporary directory
-  shell: mktemp -d
+  tempfile:
+    state: directory
+    suffix: staging
+#    path: "{{ lookup('env', 'HOME') }}"
   register: tempdir
-  tags: virtualbox_extension
+  changed_when: false
   become: true
 
 - name: download extension
