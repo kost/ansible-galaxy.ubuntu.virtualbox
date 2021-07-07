@@ -1,24 +1,45 @@
 ---
 language: python
-python: "2.7"
+python: "3.6"
+services:
+  - docker
+cache:
+  bundler:
+  directories:
+    - $HOME/.cache/pip
 env:
-  - ANSIBLE_VERSION=1.9.2
-cache: bundler
-#sudo: false
+  - ANSIBLE_VERSION=latest
+  - ANSIBLE_VERSION=2.4.1.0
+
 sudo: required
 dist: trusty
+
+virtualenv:
+  system_site_packages: false
+
+branches:
+  only:
+    - master
+
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq python-apt python-pycurl
 install:
   # Install Ansible.
-  - sudo pip install ansible==$ANSIBLE_VERSION
+  - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install ansible; else pip install ansible==$ANSIBLE_VERSION; fi
+  - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install ansible-lint; fi
 
-  # Add ansible.cfg to pick up roles path.
-  - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
+  - pip install molecule
 script:
-  - sudo ansible --version
-  - export ANSIBLE_ROLES_PATH="../"
-#  - echo localhost > inventory
-  - ansible-playbook -i hosts --syntax-check virtualbox.yml
-  - ansible-playbook -i hosts --connection=local --sudo -vvvv virtualbox.yml
+  # Check ansible version
+  - ansible --version
+
+  # Check the role/playbook's syntax.
+  - ansible-playbook --syntax-check -i ./hosts -vvvv ./virtualbox.yml --connection=local
+
+  # Molecule test
+  # - molecule test
+
+  # First run
+  # Run the role/playbook with ansible-playbook.
+  - ansible-playbook -i ./hosts ./virtualbox.yml --connection=local --sudo -vvvv

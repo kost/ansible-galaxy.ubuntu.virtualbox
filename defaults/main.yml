@@ -1,14 +1,23 @@
 ---
-#virtualbox_version: 5.0
-virtualbox_version: 4.3
+virtualbox_version: "5.2.26"
+#virtualbox_version: "6.0"
 virtualbox_package_name: "virtualbox-{{ virtualbox_version }}"
-virtualbox_dkms_enable: no
+virtualbox_dkms_enable: false
 virtualbox_dkms_package_name: virtualbox-dkms
-virtualbox_extension_enable: no
-#virtualbox_extension_version: "{{ virtualbox_version }}.12"
-virtualbox_extension_version: "{{ virtualbox_version }}.28"
-#virtualbox_extension_buildnumber: "104815"
-virtualbox_extension_buildnumber: "100309"
+virtualbox_url: "http://download.virtualbox.org/virtualbox"
+virtualbox_key: "https://www.virtualbox.org/download/oracle_vbox.asc"
+virtualbox_extension_enable: false
+virtualbox_extension_version: "{{ virtualbox_version }}"
+virtualbox_extension_buildnumber: "128414" # For 5.2.26
 virtualbox_extension_package_name: "Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_extension_version }}-{{ virtualbox_extension_buildnumber }}.vbox-extpack"
-virtualbox_extension_package_url: "http://download.virtualbox.org/virtualbox/{{ virtualbox_extension_version }}/{{ virtualbox_extension_package_name }}"
-virtualbox_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
+virtualbox_extension_package_url: "{{ virtualbox_url }}/{{ virtualbox_extension_version }}/{{ virtualbox_extension_package_name }}"
+# virtualbox_dir_tmp: "/tmp" # or override with "{{ tempdir.stdout }} in order to have be sure to download the file"
+virtualbox_dir_tmp: "{{ tempdir.stdout }}"
+
+virtualbox_repo_url_base: "{{ virtualbox_url }}/debian"
+
+virtualbox_repo_files:
+  - "download_virtualbox_org_virtualbox_debian.list"
+
+virtualbox_users:
+  - "jenkins"

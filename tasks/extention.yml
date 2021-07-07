@@ -1,0 +1,23 @@
+- name: vagrant | Create temporary directory
+  tempfile:
+    state: directory
+    suffix: staging
+#    path: "{{ lookup('env', 'HOME') }}"
+  register: tempdir
+  changed_when: false
+  become: true
+
+- name: download extension
+  get_url: url={{ virtualbox_extension_package_url }} dest={{ virtualbox_dir_tmp }}/{{ virtualbox_extension_package_name }} force=yes
+  tags: virtualbox_extension
+
+- name: install extension
+  command: VBoxManage extpack install {{ virtualbox_dir_tmp }}/{{ virtualbox_extension_package_name }}
+
+  tags: virtualbox_extension
+  become: true
+  ignore_errors: true
+
+- name: cleanup temporary directory
+  file: name={{ tempdir.stdout }} state=absent
+  tags: virtualbox_extension

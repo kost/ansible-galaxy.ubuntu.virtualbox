@@ -1,56 +1,18 @@
 ---
-- name: add virtualbox apt key
-  sudo: yes
-  action: apt_key url=http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc state=present
-  tags: virtualbox
 
-- name: add virtualbox repository
-  sudo: yes
-  action: apt_repository repo="deb http://download.virtualbox.org/virtualbox/debian {{ansible_lsb.codename}} contrib" state=present update_cache=yes
-  when: "ansible_distribution_version not in ['14.04']"
-  tags: virtualbox
+- import_tasks: RedHat.yml
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'RedHat')
 
-- name: add virtualbox repository
-  sudo: yes
-  action: apt_repository repo="deb http://download.virtualbox.org/virtualbox/debian trusty contrib" state=present update_cache=yes
-  when: "ansible_distribution_version in ['14.04']"
-  tags: virtualbox
+- import_tasks: Ubuntu.yml
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
 
-- name: install virtualbox
-  sudo: yes
-  action: apt pkg="{{item}}" state=present update_cache=yes
-  with_items:
-      - "{{virtualbox_package_name}}"
-  tags: virtualbox
-
-- name: install additional virtualbox dkms package
-  sudo: yes
-  action: apt pkg="{{item}}" state=present update_cache=yes
-  with_items:
-      - "{{virtualbox_dkms_package_name}}"
-  when: virtualbox_dkms_enable
-  tags: virtualbox
-
-- name: create temporary directory
-  sudo: yes
-  shell: mktemp -d
-  register: tempdir
+- import_tasks: extention.yml
   when: virtualbox_extension_enable
-  tags: virtualbox_extension
 
-- name: download extension
-  get_url: url={{ virtualbox_extension_package_url }} dest={{ virtualbox_dir_tmp }}/{{ virtualbox_extension_package_name }} force=yes
-  when: virtualbox_extension_enable
-  tags: virtualbox_extension
-
-- name: install extension
-  sudo: yes
-  ignore_errors: true
-  command: VBoxManage extpack install {{ virtualbox_dir_tmp }}/{{ virtualbox_extension_package_name }}
-  when: virtualbox_extension_enable
-  tags: virtualbox_extension
-
-- name: cleanup temporary directory
-  file: name={{ tempdir.stdout }} state=absent
-  when: virtualbox_extension_enable
-  tags: virtualbox_extension
+- name: Add users to VirtualBox group
+  user:
+    name: "{{ item }}"
+    groups:
+      - vboxusers
+    append: yes
+  with_items: "{{ virtualbox_users }}"
